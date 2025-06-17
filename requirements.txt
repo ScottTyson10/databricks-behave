@@ -1,0 +1,5 @@
+behave==1.2.6
+databricks-sdk==0.57.0
+pytest==7.0.0
+pytest-bdd==4.0.2
+python-dotenv==1.1.0
