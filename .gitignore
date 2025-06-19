@@ -1,5 +1,9 @@
-.python-version
-# Byte-compiled / optimized / DLL files
-__pycache__/.
-
+# Python virtual environment
 .env
+
+# Python version management
+.python-version
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc

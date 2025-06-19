@@ -28,3 +28,13 @@ venv:
 
 test: venv
 	behave
+
+setup-dbx-test-env:
+	@echo "Setting up dbx test environment..."
+	python -m scripts.create_test_clustering_tables
+	@echo "dbx test environment setup complete."
+
+dbx-test: setup-dbx-test-env
+	@echo "Running dbx tests..."
+	behave
+	@echo "dbx tests completed."
