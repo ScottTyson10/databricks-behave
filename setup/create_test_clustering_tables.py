@@ -5,8 +5,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Configuration
-CATALOG = "workspace"
-SCHEMA = "test_clustering"
 TABLE_CLUSTERED = "clustered_table"
 TABLE_AUTO_CLUSTERED = "auto_clustered_table"
 TABLE_NO_CLUSTERING = "no_clustering_table"
@@ -64,7 +62,8 @@ def create_no_clustering_table(dbx: WorkspaceClient, catalog: str, schema: str, 
     dbx.statement_execution.execute_statement(
         statement=(
             f"CREATE TABLE {catalog}.{schema}.{table} (id INT, name STRING, value DOUBLE) "
-            f"USING DELTA"
+            f"USING DELTA "
+            f"TBLPROPERTIES ('cluster_exclusion' = True)"
         ),
         warehouse_id=WAREHOUSE_ID,
         catalog=catalog,
@@ -72,17 +71,13 @@ def create_no_clustering_table(dbx: WorkspaceClient, catalog: str, schema: str, 
     )
 
 
-def main():
+def set_dbx_tables(catalog: str, schema: str):
     dbx = WorkspaceClient()
-    create_schema(dbx, CATALOG, SCHEMA)
-    drop_table_if_exists(dbx, CATALOG, SCHEMA, TABLE_CLUSTERED)
-    drop_table_if_exists(dbx, CATALOG, SCHEMA, TABLE_AUTO_CLUSTERED)
-    drop_table_if_exists(dbx, CATALOG, SCHEMA, TABLE_NO_CLUSTERING)
-    create_clustered_table(dbx, CATALOG, SCHEMA, TABLE_CLUSTERED)
-    create_auto_clustered_table(dbx, CATALOG, SCHEMA, TABLE_AUTO_CLUSTERED)
-    create_no_clustering_table(dbx, CATALOG, SCHEMA, TABLE_NO_CLUSTERING)
+    create_schema(dbx, catalog, schema)
+    drop_table_if_exists(dbx, catalog, schema, TABLE_CLUSTERED)
+    drop_table_if_exists(dbx, catalog, schema, TABLE_AUTO_CLUSTERED)
+    drop_table_if_exists(dbx, catalog, schema, TABLE_NO_CLUSTERING)
+    create_clustered_table(dbx, catalog, schema, TABLE_CLUSTERED)
+    create_auto_clustered_table(dbx, catalog, schema, TABLE_AUTO_CLUSTERED)
+    create_no_clustering_table(dbx, catalog, schema, TABLE_NO_CLUSTERING)
     print("Schema and test tables created.")
-
-
-if __name__ == "__main__":
-    main()

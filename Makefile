@@ -1,7 +1,7 @@
 PYENV_NAME = behave-tests
 PYTHON_VERSION = 3.10
 
-.PHONY: pyenv-rm install-requirements install-venv pyenv-activate
+.PHONY: test test-%
 
 # Remove venv if exists
 pyenv-rm:
@@ -26,15 +26,8 @@ venv:
 		pyenv local $(PYENV_NAME); \
 	fi
 
-test: venv
+test:
 	behave
 
-setup-dbx-test-env:
-	@echo "Setting up dbx test environment..."
-	python -m scripts.create_test_clustering_tables
-	@echo "dbx test environment setup complete."
-
-dbx-test: setup-dbx-test-env
-	@echo "Running dbx tests..."
-	behave
-	@echo "dbx tests completed."
+test-%:
+	behave --tags=@$*

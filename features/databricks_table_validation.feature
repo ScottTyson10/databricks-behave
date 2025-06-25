@@ -1,5 +1,5 @@
 Feature: Databricks Table Existence, Metadata, and Clustering Validation
-  
+
   @databricks @tables @dev
   Scenario: Check if table exists
     Given I connect to the Databricks workspace
@@ -19,7 +19,7 @@ Feature: Databricks Table Existence, Metadata, and Clustering Validation
     Then all tables should have a managed location
 
   @databricks @tables @clustering
-  Scenario: All tables in a schema are clustered or auto-clustered
+  Scenario: All tables in a schema are clustered, auto-clustered, or explicitly excluded
     Given I connect to the Databricks workspace
-    When I check all tables in "workspace.test_clustering" are clustered or auto-clustered
-    Then all tables should be clustered or auto-clustered
+    When I check all tables in "workspace.test_clustering" are clustered or cluster_exclusion flag is set
+    Then all tables should be clustered or auto-clustered or have cluster_exclusion flag
