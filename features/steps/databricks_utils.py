@@ -1,5 +1,5 @@
 import os
-from typing import Any, Callable
+from typing import Any, Callable, Optional, Tuple
 from databricks.sdk import WorkspaceClient
 import json
 
@@ -72,3 +72,49 @@ def get_table_metadata(dbx, catalog: str, schema: str, table: str) -> dict[str, 
 def get_table_extended_properties(dbx, catalog: str, schema: str, table: str) -> dict[str, Any]:
     query = f"DESCRIBE TABLE EXTENDED {catalog}.{schema}.{table} AS JSON"
     return _describe_as_json(dbx, query, catalog, schema)
+
+
+def get_column_metadata(context, table_name: str) -> list[dict]:
+    """Get column information including comments."""
+    query = f"DESCRIBE TABLE EXTENDED {table_name}"
+    result = execute_query(context, query)
+    
+    columns = []
+    for row in result:
+        if row.get('col_name') and not row['col_name'].startswith('#'):
+            columns.append({
+                'name': row['col_name'],
+                'type': row.get('data_type'),
+                'comment': row.get('comment')
+            })
+    
+    return columns
+
+
+def get_table_properties(context, table_name: str) -> dict:
+    """Get table properties including custom tags."""
+    query = f"SHOW TBLPROPERTIES {table_name}"
+    result = execute_query(context, query)
+    
+    properties = {}
+    for row in result:
+        properties[row['key']] = row['value']
+    
+    return properties
+
+
+def get_workspace_client(context) -> WorkspaceClient:
+    """Get or create a Databricks workspace client."""
+    if not hasattr(context, 'workspace_client'):
+        context.workspace_client = WorkspaceClient()
+    return context.workspace_client
+
+
+def execute_query(context, query: str) -> Any:
+    """Execute a query using the context's Databricks client."""
+    if hasattr(context, 'dbx'):
+        return _execute_query(context.dbx, query)
+    else:
+        # Use workspace client if dbx not available
+        client = get_workspace_client(context)
+        return _execute_query(client, query)
