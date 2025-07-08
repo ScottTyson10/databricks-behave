@@ -17,6 +17,17 @@ SKIP_TEST_TEARDOWN = False
 # NOTE: In production repositories we wont need to create these as we'll use the existing tables
 #       For testing we need to create some dbx objects
 def before_all(context):
+    # Set up Databricks client
+    context.dbx = WorkspaceClient()
+    context.catalog_schema = f"{CATALOG}.{SCHEMA}"
+    
+    # Load configuration from environment or defaults
+    context.config.userdata.setdefault('COLUMN_DOC_THRESHOLD', '80')
+    context.config.userdata.setdefault('VACUUM_DAYS_THRESHOLD', '30')
+    context.config.userdata.setdefault('ORPHAN_DAYS_THRESHOLD', '90')
+    context.config.userdata.setdefault('MIN_TIMEOUT_SECONDS', '300')
+    context.config.userdata.setdefault('MAX_TIMEOUT_SECONDS', '86400')
+    
     if SKIP_TEST_SETUP:
         print("Skipping test setup")
         return

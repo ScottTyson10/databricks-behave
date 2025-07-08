@@ -23,3 +23,18 @@ Feature: Databricks Table Existence, Metadata, and Clustering Validation
     Given I connect to the Databricks workspace
     When I check all tables in "workspace.test_clustering" are clustered or cluster_exclusion flag is set
     Then all tables should be clustered or auto-clustered or have cluster_exclusion flag
+
+  @databricks @tables @documentation
+  Scenario: All tables must have meaningful descriptions
+    Given I connect to the Databricks workspace
+    When I check all tables in "workspace.test_clustering" have metadata
+    Then each table should have a non-empty "comment" field
+    And the comment should not be generic like "table" or "data"
+
+  @databricks @tables @documentation @dev
+  Scenario: Tables should have documented columns
+    Given I connect to the Databricks workspace
+    And a threshold of 80% column documentation
+    When I count columns with non-empty descriptions in "workspace.test_clustering"
+    Then at least 80% of columns per table should have descriptions
+    And critical columns (containing "id", "date", "amount") must have descriptions

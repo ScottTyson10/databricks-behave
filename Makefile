@@ -31,3 +31,20 @@ test:
 
 test-%:
 	behave --tags=@$*
+
+test-compliance:
+	behave --tags=@jobs,@maintenance,@performance,@documentation
+
+test-jobs:
+	behave --tags=@jobs
+
+test-maintenance:
+	behave --tags=@maintenance
+
+test-performance:
+	behave --tags=@performance
+
+test-documentation:
+	behave --tags=@documentation
+
+test-all-compliance: test test-jobs test-maintenance test-performance test-documentation
